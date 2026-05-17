@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
-from app.models.enums import DocumentIntegrityStatus
+from app.models.enums import DocumentAccessStatus, DocumentIntegrityStatus, DocumentLifecycleStatus
 from app.schemas.common import ORMModel
 
 SHA256_PATTERN = r"^[a-f0-9]{64}$"
@@ -33,21 +33,46 @@ class DocumentVerifyRequest(BaseModel):
 class DocumentRead(ORMModel):
     id: str
     file_name: str
+    original_file_name: str | None = None
     file_type: str
+    mime_type: str | None = None
     file_size: int
     storage_provider: str
-    storage_path: str
+    storage_bucket: str | None = None
+    storage_key: str | None = None
     sha256_hash: str
     uploaded_by: str
     uploaded_at: datetime
     integrity_status: DocumentIntegrityStatus
+    access_status: DocumentAccessStatus = DocumentAccessStatus.PRIVATE
+    lifecycle_status: DocumentLifecycleStatus = DocumentLifecycleStatus.UPLOADED
+    metadata_json: dict | None = None
+    verified_at: datetime | None = None
+    last_integrity_check_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
 
 class IntegrityVerificationResponse(BaseModel):
     document_id: str
-    expected_hash: str
-    actual_hash: str
-    matches: bool
+    database_hash: str
+    current_file_hash: str
+    blockchain_hash: str | None = None
+    database_match: bool
+    blockchain_match: bool | None = None
     integrity_status: DocumentIntegrityStatus
+    verified_at: datetime | None = None
+
+
+class DocumentDownloadResponse(BaseModel):
+    document_id: str
+    download_url: str
+    expires_in: int
+
+
+class DocumentBlockchainVerificationResponse(BaseModel):
+    document_id: str
+    database_hash: str
+    blockchain_hash: str | None = None
+    blockchain_match: bool
+    proof: dict

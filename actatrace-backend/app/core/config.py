@@ -20,6 +20,17 @@ class Settings(BaseSettings):
     fabric_chaincode_name: str = Field(default="actatrace-chaincode", alias="FABRIC_CHAINCODE_NAME")
     fabric_org_name: str = Field(default="", alias="FABRIC_ORG_NAME")
     blockchain_network_name: str = Field(default="local-fabric", alias="BLOCKCHAIN_NETWORK_NAME")
+    storage_provider: str = Field(default="local", alias="STORAGE_PROVIDER")
+    local_storage_path: str = Field(default="./storage", alias="LOCAL_STORAGE_PATH")
+    s3_endpoint_url: str = Field(default="http://minio:9000", alias="S3_ENDPOINT_URL")
+    s3_access_key: str = Field(default="minioadmin", alias="S3_ACCESS_KEY")
+    s3_secret_key: str = Field(default="minioadmin", alias="S3_SECRET_KEY")
+    s3_bucket_name: str = Field(default="actatrace-documents", alias="S3_BUCKET_NAME")
+    s3_region: str = Field(default="us-east-1", alias="S3_REGION")
+    s3_use_ssl: bool = Field(default=False, alias="S3_USE_SSL")
+    max_document_upload_mb: int = Field(default=25, alias="MAX_DOCUMENT_UPLOAD_MB")
+    document_presigned_url_expire_seconds: int = Field(default=300, alias="DOCUMENT_PRESIGNED_URL_EXPIRE_SECONDS")
+    enable_auto_blockchain_anchor: bool = Field(default=False, alias="ENABLE_AUTO_BLOCKCHAIN_ANCHOR")
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 

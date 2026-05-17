@@ -13,6 +13,10 @@ Included:
 - User management.
 - Acta registration.
 - Document metadata registration and SHA-256 hashing.
+- Multipart acta document upload.
+- Local and S3-compatible document storage.
+- MinIO local storage stack.
+- Document integrity verification from stored bytes.
 - Chain-of-custody events.
 - PREP result capture and validation.
 - Append-only audit log model and audit service.
@@ -25,7 +29,7 @@ Excluded:
 - Production blockchain integration.
 - Electronic voting.
 - Vote casting.
-- Real object storage integration.
+- Production object storage hardening.
 - Advanced analytics or AI fraud detection.
 - Microservices and Kubernetes.
 
@@ -61,6 +65,17 @@ FABRIC_CHANNEL_NAME=actatrace-channel
 FABRIC_CHAINCODE_NAME=actatrace-chaincode
 FABRIC_ORG_NAME=
 BLOCKCHAIN_NETWORK_NAME=local-fabric
+STORAGE_PROVIDER=local
+LOCAL_STORAGE_PATH=./storage
+S3_ENDPOINT_URL=http://minio:9000
+S3_ACCESS_KEY=minioadmin
+S3_SECRET_KEY=minioadmin
+S3_BUCKET_NAME=actatrace-documents
+S3_REGION=us-east-1
+S3_USE_SSL=false
+MAX_DOCUMENT_UPLOAD_MB=25
+DOCUMENT_PRESIGNED_URL_EXPIRE_SECONDS=300
+ENABLE_AUTO_BLOCKCHAIN_ANCHOR=false
 ```
 
 Use a strong `JWT_SECRET_KEY` outside local development.
@@ -145,3 +160,32 @@ Useful endpoints:
 - `GET /api/v1/blockchain/verify/hash/{hash_value}`
 
 Fabric configuration is intentionally deferred to a real Fabric 2.5 network. Set `BLOCKCHAIN_PROVIDER=hyperledger_fabric` and configure the Fabric connection profile, wallet, identity, channel, and chaincode values when that network exists.
+
+## Document Storage
+
+Docker Compose runs MinIO for local S3-compatible storage:
+
+```bash
+docker compose up -d --build --remove-orphans
+docker compose exec backend alembic upgrade head
+```
+
+MinIO console:
+
+```text
+http://localhost:9001
+```
+
+Local development credentials:
+
+```text
+minioadmin / minioadmin
+```
+
+Document endpoints:
+
+- `POST /api/v1/documents/upload-acta`
+- `GET /api/v1/documents/{document_id}`
+- `GET /api/v1/documents/{document_id}/download`
+- `POST /api/v1/documents/{document_id}/verify-integrity`
+- `GET /api/v1/documents/{document_id}/verify-blockchain`

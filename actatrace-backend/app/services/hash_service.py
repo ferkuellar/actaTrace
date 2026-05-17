@@ -1,6 +1,7 @@
 import base64
 import hashlib
 from pathlib import Path
+from typing import BinaryIO
 
 
 class HashService:
@@ -14,6 +15,15 @@ class HashService:
         with Path(path).open("rb") as file:
             for chunk in iter(lambda: file.read(1024 * 1024), b""):
                 digest.update(chunk)
+        return digest.hexdigest()
+
+    def generate_sha256_from_stream(self, stream: BinaryIO) -> str:
+        digest = hashlib.sha256()
+        position = stream.tell() if hasattr(stream, "tell") else None
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+        if position is not None and hasattr(stream, "seek"):
+            stream.seek(position)
         return digest.hexdigest()
 
     def verify_sha256(self, content: bytes, expected_hash: str) -> bool:

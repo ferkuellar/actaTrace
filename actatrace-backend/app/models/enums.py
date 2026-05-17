@@ -32,6 +32,23 @@ class DocumentIntegrityStatus(StrEnum):
     VALID = "VALID"
     MISMATCH = "MISMATCH"
     CORRUPTED = "CORRUPTED"
+    STORAGE_MISSING = "STORAGE_MISSING"
+    ANCHORED = "ANCHORED"
+
+
+class DocumentAccessStatus(StrEnum):
+    PRIVATE = "PRIVATE"
+    PUBLIC_VERIFIABLE = "PUBLIC_VERIFIABLE"
+    RESTRICTED = "RESTRICTED"
+
+
+class DocumentLifecycleStatus(StrEnum):
+    UPLOADED = "UPLOADED"
+    HASHED = "HASHED"
+    STORED = "STORED"
+    VERIFIED = "VERIFIED"
+    ANCHORED = "ANCHORED"
+    ARCHIVED = "ARCHIVED"
 
 
 class CustodyEventType(StrEnum):
