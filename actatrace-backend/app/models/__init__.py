@@ -1,4 +1,5 @@
 from app.models.acta import Acta
+from app.models.alert import Alert
 from app.models.audit_log import AuditLog
 from app.models.blockchain_anchor import BlockchainAnchor
 from app.models.custody_event import CustodyEvent

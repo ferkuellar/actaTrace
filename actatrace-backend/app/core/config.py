@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     max_document_upload_mb: int = Field(default=25, alias="MAX_DOCUMENT_UPLOAD_MB")
     document_presigned_url_expire_seconds: int = Field(default=300, alias="DOCUMENT_PRESIGNED_URL_EXPIRE_SECONDS")
     enable_auto_blockchain_anchor: bool = Field(default=False, alias="ENABLE_AUTO_BLOCKCHAIN_ANCHOR")
+    custody_reception_threshold_hours: int = Field(default=4, alias="CUSTODY_RECEPTION_THRESHOLD_HOURS")
+    enable_alert_generation: bool = Field(default=True, alias="ENABLE_ALERT_GENERATION")
+    enable_public_traceability: bool = Field(default=True, alias="ENABLE_PUBLIC_TRACEABILITY")
+    audit_log_retention_days: int = Field(default=2555, alias="AUDIT_LOG_RETENTION_DAYS")
+    public_traceability_rate_limit_per_minute: int = Field(default=60, alias="PUBLIC_TRACEABILITY_RATE_LIMIT_PER_MINUTE")
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
