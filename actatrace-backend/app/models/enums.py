@@ -56,3 +56,15 @@ class BlockchainVerificationStatus(StrEnum):
     ANCHORED = "ANCHORED"
     VERIFIED = "VERIFIED"
     FAILED = "FAILED"
+
+
+class BlockchainAnchorType(StrEnum):
+    DOCUMENT_HASH = "DOCUMENT_HASH"
+    CRITICAL_EVENT = "CRITICAL_EVENT"
+
+
+class BlockchainProviderType(StrEnum):
+    MOCK = "MOCK"
+    HYPERLEDGER_FABRIC = "HYPERLEDGER_FABRIC"
+    ETHEREUM = "ETHEREUM"
+    POLYGON = "POLYGON"

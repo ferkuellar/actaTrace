@@ -12,6 +12,14 @@ class Settings(BaseSettings):
     environment: str = Field(default="local", alias="ENVIRONMENT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     backend_cors_origins: str = Field(default="", alias="BACKEND_CORS_ORIGINS")
+    blockchain_provider: str = Field(default="mock", alias="BLOCKCHAIN_PROVIDER")
+    fabric_connection_profile: str = Field(default="", alias="FABRIC_CONNECTION_PROFILE")
+    fabric_wallet_path: str = Field(default="", alias="FABRIC_WALLET_PATH")
+    fabric_identity: str = Field(default="", alias="FABRIC_IDENTITY")
+    fabric_channel_name: str = Field(default="actatrace-channel", alias="FABRIC_CHANNEL_NAME")
+    fabric_chaincode_name: str = Field(default="actatrace-chaincode", alias="FABRIC_CHAINCODE_NAME")
+    fabric_org_name: str = Field(default="", alias="FABRIC_ORG_NAME")
+    blockchain_network_name: str = Field(default="local-fabric", alias="BLOCKCHAIN_NETWORK_NAME")
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 

@@ -9,6 +9,7 @@ Included:
 - JWT authentication.
 - Password hashing with bcrypt.
 - Basic RBAC.
+- Mock blockchain hash anchoring and verification.
 - User management.
 - Acta registration.
 - Document metadata registration and SHA-256 hashing.
@@ -52,6 +53,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 ENVIRONMENT=local
 LOG_LEVEL=INFO
 BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+BLOCKCHAIN_PROVIDER=mock
+FABRIC_CONNECTION_PROFILE=
+FABRIC_WALLET_PATH=
+FABRIC_IDENTITY=
+FABRIC_CHANNEL_NAME=actatrace-channel
+FABRIC_CHAINCODE_NAME=actatrace-chaincode
+FABRIC_ORG_NAME=
+BLOCKCHAIN_NETWORK_NAME=local-fabric
 ```
 
 Use a strong `JWT_SECRET_KEY` outside local development.
@@ -113,3 +122,26 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
 - Public citizen APIs are intentionally not implemented in Phase 2.
 - Audit log update/delete endpoints are intentionally omitted.
 - Do not log passwords, tokens, or document contents.
+
+## Blockchain Verification
+
+Local development uses the mock provider:
+
+```env
+BLOCKCHAIN_PROVIDER=mock
+```
+
+Phase 3 endpoints are available under:
+
+```text
+/api/v1/blockchain
+```
+
+Useful endpoints:
+
+- `POST /api/v1/blockchain/anchor/document/{document_id}`
+- `POST /api/v1/blockchain/anchor/acta/{acta_id}`
+- `POST /api/v1/blockchain/anchor/custody-event/{event_id}`
+- `GET /api/v1/blockchain/verify/hash/{hash_value}`
+
+Fabric configuration is intentionally deferred to a real Fabric 2.5 network. Set `BLOCKCHAIN_PROVIDER=hyperledger_fabric` and configure the Fabric connection profile, wallet, identity, channel, and chaincode values when that network exists.

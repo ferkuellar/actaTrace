@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import IntegrityError
 
 from app.api.v1.router import api_router
@@ -64,6 +65,11 @@ async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSON
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "actatrace-backend"}
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse(url="/docs")
 
 
 app.include_router(api_router)
