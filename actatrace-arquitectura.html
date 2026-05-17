@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>ActaTrace — Arquitectura del Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#09090b;color:#fafafa;font-family:'IBM Plex Sans',sans-serif;padding:40px 32px;min-height:100vh}
+  .header{margin-bottom:36px}
+  .title{font-size:22px;font-weight:800;margin-bottom:4px}
+  .subtitle{color:#a1a1aa;font-size:13px}
+  .diagram{display:grid;grid-template-columns:160px 1fr 220px;gap:24px;align-items:start}
+  .col-label{color:#a1a1aa;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+  .actors-col{display:flex;flex-direction:column;gap:10px}
+  .actor{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+  .actor-icon{font-size:20px;width:32px;text-align:center}
+  .actor-label{font-size:12px;font-weight:600;color:#fafafa}
+  .actor-sub{font-size:10px;color:#71717a;margin-top:2px}
+
+  .system-col{display:flex;flex-direction:column;gap:16px}
+  .layer{border-radius:10px;overflow:hidden;border:1px solid}
+  .layer-header{padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:0.5px}
+  .layer-body{padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap}
+
+  .layer-ui{border-color:#0C5CAB40;background:#0C5CAB08}
+  .layer-ui .layer-header{background:#0C5CAB20;color:#60a5fa}
+  .layer-api{border-color:#10b98140;background:#10b98108}
+  .layer-api .layer-header{background:#10b98120;color:#10b981}
+  .layer-data{border-color:#f59e0b40;background:#f59e0b08}
+  .layer-data .layer-header{background:#f59e0b20;color:#f59e0b}
+  .layer-bc{border-color:#a855f740;background:#a855f708}
+  .layer-bc .layer-header{background:#a855f720;color:#c084fc}
+
+  .chip{background:#18181b;border:1px solid #27272a;border-radius:6px;padding:6px 10px;font-size:11px;color:#d4d4d8;white-space:nowrap}
+  .chip b{color:#fafafa;display:block;font-size:12px;margin-bottom:2px}
+  .chip small{color:#71717a;font-family:'IBM Plex Mono',monospace;font-size:10px}
+
+  .infra-col{display:flex;flex-direction:column;gap:10px}
+  .infra-box{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:12px 14px}
+  .infra-title{font-size:11px;font-weight:700;color:#a1a1aa;margin-bottom:8px;letter-spacing:0.5px}
+  .infra-item{font-size:11px;color:#d4d4d8;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+  .arrows{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 8px}
+
+  .principles{margin-top:32px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .principle{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:14px}
+  .p-icon{font-size:20px;margin-bottom:8px}
+  .p-title{font-size:12px;font-weight:700;margin-bottom:4px}
+  .p-desc{font-size:11px;color:#71717a;line-height:1.5}
+
+  .flow-section{margin-top:28px}
+  .flow-title{font-size:12px;font-weight:700;color:#a1a1aa;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  .flow{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+  .flow-step{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:10px 14px;font-size:12px;text-align:center}
+  .flow-step .num{font-size:10px;color:#71717a;margin-bottom:4px;font-family:'IBM Plex Mono',monospace}
+  .flow-step .name{font-weight:700;color:#fafafa}
+  .flow-step .tech{font-size:10px;color:#a1a1aa;font-family:'IBM Plex Mono',monospace;margin-top:2px}
+  .flow-arrow{color:#52525b;font-size:18px;margin:0 6px}
+
+  .legend{margin-top:24px;display:flex;gap:20px;flex-wrap:wrap}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#a1a1aa}
+  .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+  .tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.5px;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;vertical-align:middle;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0C5CAB"/><path d="M8 16 L16 8 L24 16 L16 24 Z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="#fff"/></svg>
+    <div>
+      <div class="title">ActaTrace — Arquitectura del Sistema</div>
+      <div class="subtitle">Trazabilidad Electoral con Blockchain · Versión MVP · Mayo 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Diagram -->
+<div class="diagram">
+
+  <!-- Actores -->
+  <div>
+    <div class="col-label">Actores</div>
+    <div class="actors-col">
+      <div class="actor" style="border-color:#10b98140;background:#10b98108">
+        <div class="actor-icon">👤</div>
+        <div><div class="actor-label" style="color:#10b981">Ciudadano</div><div class="actor-sub">Solo lectura / Verificación pública</div></div>
+      </div>
+      <div class="actor">
+        <div class="actor-icon">⌨</div>
+        <div><div class="actor-label">Capturista</div><div class="actor-sub">Ingreso de actas y PREP</div></div>
+      </div>
+      <div class="actor">
+        <div class="actor-icon">🔍</div>
+        <div><div class="actor-label">Supervisor</div><div class="actor-sub">Validación de actas</div></div>
+      </div>
+      <div class="actor">
+        <div class="actor-icon">📋</div>
+        <div><div class="actor-label">Auditor</div><div class="actor-sub">Revisión de bitácora</div></div>
+      </div>
+      <div class="actor" style="border-color:#ef444440;background:#ef444408">
+        <div class="actor-icon">⚙</div>
+        <div><div class="actor-label" style="color:#ef4444">Admin Electoral</div><div class="actor-sub">Gestión del sistema</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Layers -->
+  <div class="system-col">
+
+    <!-- Capa UI -->
+    <div class="layer layer-ui">
+      <div class="layer-header">Capa 1 — Interfaz de Usuario</div>
+      <div class="layer-body">
+        <div class="chip">
+          <b>Portal Ciudadano</b>
+          <small>Next.js · Público</small>
+        </div>
+        <div class="chip">
+          <b>Dashboard Institucional</b>
+          <small>React · Roles protegidos</small>
+        </div>
+        <div class="chip">
+          <b>Portal de Auditoría</b>
+          <small>React · AUDITOR / OBS</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capa API -->
+    <div class="layer layer-api">
+      <div class="layer-header">Capa 2 — API y Lógica de Negocio</div>
+      <div class="layer-body">
+        <div class="chip">
+          <b>API Gateway</b>
+          <small>FastAPI · REST</small>
+        </div>
+        <div class="chip">
+          <b>Auth Service</b>
+          <small>JWT + Roles RBAC</small>
+        </div>
+        <div class="chip">
+          <b>Módulo Actas</b>
+          <small>Upload · Hash · Validación</small>
+        </div>
+        <div class="chip">
+          <b>Módulo PREP</b>
+          <small>Captura · Comparación</small>
+        </div>
+        <div class="chip">
+          <b>Módulo Custodia</b>
+          <small>Eventos · Firmas</small>
+        </div>
+        <div class="chip">
+          <b>Módulo Auditoría</b>
+          <small>Bitácora · Alertas</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capa Datos -->
+    <div class="layer layer-data">
+      <div class="layer-header">Capa 3 — Almacenamiento y Datos</div>
+      <div class="layer-body">
+        <div class="chip">
+          <b>PostgreSQL</b>
+          <small>Fuente principal · Relacional</small>
+        </div>
+        <div class="chip">
+          <b>Redis</b>
+          <small>Cache · Colas de eventos</small>
+        </div>
+        <div class="chip">
+          <b>S3 / IPFS</b>
+          <small>Documentos originales</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capa Blockchain -->
+    <div class="layer layer-bc">
+      <div class="layer-header">Capa 4 — Verificación e Inmutabilidad</div>
+      <div class="layer-body">
+        <div class="chip">
+          <b>Hyperledger Fabric</b>
+          <small>Red privada permisionada</small>
+        </div>
+        <div class="chip" style="opacity:0.7">
+          <b>Polygon / Ethereum</b>
+          <small>Testnet · Alternativo</small>
+        </div>
+        <div class="chip">
+          <b>Hash Registry</b>
+          <small>SHA-256 → On-chain</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Infra y Seguridad -->
+  <div class="infra-col">
+    <div class="col-label">Infraestructura</div>
+
+    <div class="infra-box">
+      <div class="infra-title">🔐 Seguridad</div>
+      <div class="infra-item"><div class="dot" style="background:#0C5CAB"></div> JWT + RBAC por módulo</div>
+      <div class="infra-item"><div class="dot" style="background:#0C5CAB"></div> HTTPS obligatorio</div>
+      <div class="infra-item"><div class="dot" style="background:#0C5CAB"></div> Firma digital de eventos</div>
+      <div class="infra-item"><div class="dot" style="background:#0C5CAB"></div> Auditoría de accesos</div>
+    </div>
+
+    <div class="infra-box">
+      <div class="infra-title">📊 Observabilidad</div>
+      <div class="infra-item"><div class="dot" style="background:#10b981"></div> Logs estructurados (JSON)</div>
+      <div class="infra-item"><div class="dot" style="background:#10b981"></div> Métricas de cobertura</div>
+      <div class="infra-item"><div class="dot" style="background:#10b981"></div> Alertas de inconsistencia</div>
+      <div class="infra-item"><div class="dot" style="background:#10b981"></div> Dashboard en tiempo real</div>
+    </div>
+
+    <div class="infra-box">
+      <div class="infra-title">🚀 Deploy</div>
+      <div class="infra-item"><div class="dot" style="background:#f59e0b"></div> Docker + Kubernetes</div>
+      <div class="infra-item"><div class="dot" style="background:#f59e0b"></div> Terraform (IaC)</div>
+      <div class="infra-item"><div class="dot" style="background:#f59e0b"></div> CI/CD automatizado</div>
+      <div class="infra-item"><div class="dot" style="background:#f59e0b"></div> Ambiente: AWS / OCI</div>
+    </div>
+
+    <div class="infra-box" style="border-color:#a855f740;background:#a855f708">
+      <div class="infra-title" style="color:#c084fc">⛓ Blockchain</div>
+      <div class="infra-item" style="color:#d4d4d8"><div class="dot" style="background:#a855f7"></div> Solo hashes + eventos</div>
+      <div class="infra-item" style="color:#d4d4d8"><div class="dot" style="background:#a855f7"></div> Sin datos personales</div>
+      <div class="infra-item" style="color:#d4d4d8"><div class="dot" style="background:#a855f7"></div> Verificación pública</div>
+      <div class="infra-item" style="color:#d4d4d8"><div class="dot" style="background:#a855f7"></div> Inmutable + auditable</div>
+    </div>
+  </div>
+</div>
+
+<!-- Flujo de Datos -->
+<div class="flow-section">
+  <div class="flow-title">Flujo de Datos Principal</div>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="num">01</div>
+      <div class="name">Acta Física</div>
+      <div class="tech">Papel original</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">02</div>
+      <div class="name">Upload</div>
+      <div class="tech">API / S3</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:#10b98140;background:#10b98108">
+      <div class="num">03</div>
+      <div class="name" style="color:#10b981">Hash SHA-256</div>
+      <div class="tech">Generación automática</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">04</div>
+      <div class="name">PostgreSQL</div>
+      <div class="tech">Registro + metadatos</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:#a855f740;background:#a855f708">
+      <div class="num">05</div>
+      <div class="name" style="color:#c084fc">Blockchain TX</div>
+      <div class="tech">Hash on-chain</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">06</div>
+      <div class="name">Auditoría</div>
+      <div class="tech">Bitácora inmutable</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:#0C5CAB40;background:#0C5CAB08">
+      <div class="num">07</div>
+      <div class="name" style="color:#60a5fa">Ciudadano</div>
+      <div class="tech">Verificación pública</div>
+    </div>
+  </div>
+</div>
+
+<!-- Principios de diseño -->
+<div class="principles">
+  <div class="principle">
+    <div class="p-icon">🔍</div>
+    <div class="p-title">Auditabilidad primero</div>
+    <div class="p-desc">Cada componente es independientemente verificable sin necesidad de confiar en el sistema.</div>
+  </div>
+  <div class="principle">
+    <div class="p-icon">🧱</div>
+    <div class="p-title">Separación de responsabilidades</div>
+    <div class="p-desc">Backend, storage, blockchain y UI son capas desacopladas con responsabilidades distintas.</div>
+  </div>
+  <div class="principle">
+    <div class="p-icon">⛓</div>
+    <div class="p-title">Blockchain mínimo</div>
+    <div class="p-desc">Solo hashes y eventos críticos. La base de datos relacional es la fuente principal de datos.</div>
+  </div>
+  <div class="principle">
+    <div class="p-icon">🌐</div>
+    <div class="p-title">Transparencia selectiva</div>
+    <div class="p-desc">Lo verificable es público. Los datos sensibles están protegidos con roles y permisos estrictos.</div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="legend" style="margin-top:24px">
+  <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Interfaz de usuario</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> API y lógica</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Almacenamiento</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Blockchain</div>
+  <div class="legend-item" style="margin-left:auto;color:#52525b;font-size:10px">ActaTrace MVP · Versión arquitectura v1.0 · 2026</div>
+</div>
+
+</body>
+</html>

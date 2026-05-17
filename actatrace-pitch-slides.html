@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>ActaTrace — Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#09090b;color:#fafafa;font-family:'IBM Plex Sans',sans-serif;overflow:hidden;height:100vh;width:100vw}
+  .deck{width:100%;height:100%;position:relative}
+  .slide{position:absolute;inset:0;display:none;padding:56px 64px;flex-direction:column;justify-content:center}
+  .slide.active{display:flex}
+  .nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:100;background:#18181b;border:1px solid #27272a;border-radius:40px;padding:8px 20px}
+  .nav-btn{background:none;border:none;color:#a1a1aa;cursor:pointer;font-size:18px;padding:4px 8px;display:flex;align-items:center;transition:color 0.15s}
+  .nav-btn:hover{color:#fafafa}
+  .nav-dots{display:flex;gap:6px;align-items:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:#3f3f46;cursor:pointer;transition:all 0.2s}
+  .dot.active{background:#0C5CAB;width:20px;border-radius:4px}
+  .slide-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#52525b;min-width:40px;text-align:center}
+  .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:3px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+  .kbd{background:#18181b;border:1px solid #3f3f46;border-radius:4px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a1a1aa}
+
+  /* Slide 1 — Cover */
+  .s1-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%, #0C5CAB18, transparent 60%), radial-gradient(ellipse at 10% 80%, #10b98110, transparent 50%)}
+  .s1-grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:40px 40px;opacity:0.5}
+  .s1-content{position:relative;z-index:1}
+  .logo-mark{width:56px;height:56px;background:#0C5CAB;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+  .cover-title{font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-1px;margin-bottom:16px}
+  .cover-title span{color:#0C5CAB}
+  .cover-sub{font-size:18px;color:#a1a1aa;font-weight:300;margin-bottom:32px;max-width:520px;line-height:1.5}
+  .cover-tags{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* Slide 2 — Problem */
+  .s2-content{display:flex;gap:48px;align-items:flex-start}
+  .s2-left{flex:1}
+  .s2-right{width:280px}
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#52525b;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+  .slide-title{font-size:36px;font-weight:800;line-height:1.1;margin-bottom:20px}
+  .problem-item{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+  .p-num{width:28px;height:28px;border-radius:50%;background:#ef444420;border:1px solid #ef444440;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#ef4444;flex-shrink:0;margin-top:2px}
+  .p-text{font-size:14px;color:#d4d4d8;line-height:1.6}
+  .p-text strong{color:#fafafa}
+  .stat-box{background:#18181b;border:1px solid #27272a;border-radius:10px;padding:20px;margin-bottom:14px}
+  .stat-num{font-size:38px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:#ef4444}
+  .stat-label{font-size:12px;color:#71717a;margin-top:4px}
+  .stat-sub{font-size:11px;color:#52525b;margin-top:6px;line-height:1.5}
+
+  /* Slide 3 — Solution */
+  .s3-content{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+  .solution-line{font-size:22px;font-weight:700;margin-bottom:16px;line-height:1.3}
+  .solution-line span{color:#10b981}
+  .flow-box{background:#18181b;border:1px solid #27272a;border-radius:10px;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:12px}
+  .flow-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #27272a}
+  .flow-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .f-step{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .f-label{color:#d4d4d8;font-size:12px}
+  .f-sub{color:#71717a;font-size:10px}
+  .module-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+  .module{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:12px 14px}
+  .module-icon{font-size:16px;margin-bottom:6px}
+  .module-name{font-size:12px;font-weight:700;margin-bottom:2px}
+  .module-desc{font-size:10px;color:#71717a}
+
+  /* Slide 4 — Demo */
+  .demo-content{display:flex;gap:32px;align-items:flex-start}
+  .demo-left{flex:1}
+  .demo-screen{background:#111113;border:1px solid #27272a;border-radius:12px;overflow:hidden;flex:1}
+  .screen-bar{background:#18181b;padding:8px 12px;display:flex;gap:6px;align-items:center;border-bottom:1px solid #27272a}
+  .screen-dot{width:8px;height:8px;border-radius:50%}
+  .screen-body{padding:16px}
+  .mock-search{background:#09090b;border:1px solid #27272a;border-radius:6px;padding:8px 12px;color:#71717a;font-size:11px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace}
+  .mock-card{background:#09090b;border:1px solid #10b98130;border-radius:8px;padding:12px}
+  .mock-badge{display:inline-block;background:#10b98120;color:#10b981;font-size:9px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:0.5px;margin-bottom:8px;font-family:'IBM Plex Mono',monospace}
+  .mock-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px}
+  .mock-hash{background:#000;border-radius:4px;padding:4px 8px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#10b981;word-break:break-all;margin-top:8px}
+  .demo-point{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start}
+  .dp-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .dp-text{font-size:13px;color:#d4d4d8;line-height:1.5}
+  .dp-text strong{color:#fafafa}
+
+  /* Slide 5 — Impact */
+  .impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+  .impact-card{background:#18181b;border:1px solid #27272a;border-radius:10px;padding:18px}
+  .ic-icon{font-size:22px;margin-bottom:10px}
+  .ic-metric{font-size:30px;font-weight:800;font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+  .ic-label{font-size:12px;color:#a1a1aa;margin-bottom:6px}
+  .ic-desc{font-size:11px;color:#71717a;line-height:1.5}
+  .market-box{background:#18181b;border:1px solid #0C5CAB30;border-radius:10px;padding:18px;display:flex;gap:24px;align-items:center}
+  .market-stat{text-align:center;flex:1;border-right:1px solid #27272a;padding-right:20px}
+  .market-stat:last-child{border-right:none;padding-right:0}
+  .market-num{font-size:26px;font-weight:800;color:#0C5CAB;font-family:'IBM Plex Mono',monospace}
+  .market-label{font-size:11px;color:#71717a;margin-top:4px}
+
+  /* Slide 6 — Tech */
+  .tech-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .tech-section{background:#18181b;border:1px solid #27272a;border-radius:10px;padding:18px}
+  .ts-title{font-size:11px;font-weight:700;color:#71717a;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;font-family:'IBM Plex Mono',monospace}
+  .ts-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:#d4d4d8}
+  .ts-item:last-child{margin-bottom:0}
+  .ts-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .ts-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a1a1aa;margin-left:auto}
+  .principles-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .pr-chip{background:#0C5CAB15;border:1px solid #0C5CAB30;border-radius:6px;padding:8px 12px;font-size:12px;color:#60a5fa;display:flex;align-items:center;gap:6px}
+
+  /* Slide 7 — Ask */
+  .ask-content{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  .ask-left{}
+  .ask-title{font-size:38px;font-weight:800;line-height:1.1;margin-bottom:16px}
+  .ask-title span{color:#0C5CAB}
+  .ask-box{background:#18181b;border:1px solid #0C5CAB30;border-radius:10px;padding:20px;margin-bottom:14px}
+  .ab-label{font-size:10px;font-weight:700;color:#52525b;letter-spacing:1px;margin-bottom:8px;font-family:'IBM Plex Mono',monospace}
+  .ab-value{font-size:28px;font-weight:800;color:#0C5CAB;font-family:'IBM Plex Mono',monospace}
+  .ab-sub{font-size:11px;color:#71717a;margin-top:4px}
+  .milestone{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+  .ms-q{width:40px;background:#0C5CAB20;border-radius:4px;text-align:center;font-size:10px;font-weight:700;color:#0C5CAB;padding:4px;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+  .ms-text{font-size:12px;color:#d4d4d8}
+  .ms-text strong{color:#fafafa;display:block;margin-bottom:2px}
+  .contact-box{background:#18181b;border:1px solid #27272a;border-radius:10px;padding:18px;margin-top:20px}
+  .contact-quote{font-size:14px;font-style:italic;color:#a1a1aa;line-height:1.6;margin-bottom:12px}
+  .contact-name{font-weight:700;color:#fafafa;font-size:14px}
+  .contact-sub{font-size:12px;color:#71717a}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ── Slide 1 — Cover ─────────────────────────────────────────── -->
+<div class="slide active" id="s1">
+  <div class="s1-bg"></div>
+  <div class="s1-grid"></div>
+  <div class="s1-content">
+    <div class="logo-mark">
+      <svg width="30" height="30" viewBox="0 0 30 30"><path d="M6 15 L15 6 L24 15 L15 24 Z" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="3.5" fill="#fff"/></svg>
+    </div>
+    <div class="cover-title">Acta<span>Trace</span></div>
+    <div class="cover-sub">La capa de verificación que hace los resultados electorales auditables por cualquier ciudadano, sin depender de la confianza en ninguna institución.</div>
+    <div class="cover-tags">
+      <span class="tag" style="background:#0C5CAB20;color:#60a5fa">GovTech</span>
+      <span class="tag" style="background:#10b98120;color:#10b981">Blockchain</span>
+      <span class="tag" style="background:#a855f720;color:#c084fc">Trazabilidad Electoral</span>
+      <span class="tag" style="background:#27272a;color:#a1a1aa">MVP · 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Slide 2 — Problem ────────────────────────────────────────── -->
+<div class="slide" id="s2">
+  <div class="section-label">El Problema</div>
+  <div class="s2-content">
+    <div class="s2-left">
+      <div class="slide-title">Los ciudadanos no pueden<br/>verificar los resultados.</div>
+      <div class="problem-item">
+        <div class="p-num">1</div>
+        <div class="p-text"><strong>El PREP no tiene evidencia vinculada.</strong> Los resultados preliminares no están conectados con el acta física que los respalda. Se declaró, no se demostró.</div>
+      </div>
+      <div class="problem-item">
+        <div class="p-num">2</div>
+        <div class="p-text"><strong>La cadena de custodia es opaca.</strong> No existe registro público de quién manipuló cada documento, cuándo ni en qué condición llegó.</div>
+      </div>
+      <div class="problem-item">
+        <div class="p-num">3</div>
+        <div class="p-text"><strong>La detección de inconsistencias depende de humanos.</strong> Diferencias entre acta y PREP solo se detectan si alguien las busca manualmente.</div>
+      </div>
+    </div>
+    <div class="s2-right">
+      <div class="stat-box">
+        <div class="stat-num">63%</div>
+        <div class="stat-label">de mexicanos desconfía de los resultados electorales</div>
+        <div class="stat-sub">Fuente: Latinobarómetro 2023 — Percepción de integridad electoral en México.</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">+170K</div>
+        <div class="stat-label">casillas electorales en elecciones federales</div>
+        <div class="stat-sub">Cada una genera un acta sin mecanismo de verificación ciudadana independiente.</div>
+      </div>
+      <div class="stat-box" style="border-color:#f59e0b30">
+        <div class="stat-num" style="color:#f59e0b">0</div>
+        <div class="stat-label" style="color:#a1a1aa">sistemas públicos de verificación de integridad documental electoral en México</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Slide 3 — Solution ───────────────────────────────────────── -->
+<div class="slide" id="s3">
+  <div class="section-label">La Solución</div>
+  <div class="s3-content">
+    <div>
+      <div class="slide-title">Trazabilidad verificable,<br/>de principio a fin.</div>
+      <div class="solution-line">Cada acta genera un <span>hash inmutable</span>.<br/>Cada hash va a blockchain.<br/>Cualquier ciudadano puede verificar.</div>
+      <div class="module-grid">
+        <div class="module">
+          <div class="module-icon">📄</div>
+          <div class="module-name">Registro de Actas</div>
+          <div class="module-desc">Upload + SHA-256 + trazabilidad</div>
+        </div>
+        <div class="module">
+          <div class="module-icon">⛓</div>
+          <div class="module-name">PREP Verificable</div>
+          <div class="module-desc">Acta fuente + comparación automática</div>
+        </div>
+        <div class="module">
+          <div class="module-icon">🔗</div>
+          <div class="module-name">Cadena de Custodia</div>
+          <div class="module-desc">Quién, cuándo, en qué estado</div>
+        </div>
+        <div class="module">
+          <div class="module-icon">🌐</div>
+          <div class="module-name">Portal Ciudadano</div>
+          <div class="module-desc">Verificación pública sin registro</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="flow-box">
+        <div class="flow-row">
+          <div class="f-step" style="background:#27272a;color:#fafafa">01</div>
+          <div><div class="f-label">Acta física → Upload</div><div class="f-sub">Capturista sube el documento</div></div>
+        </div>
+        <div class="flow-row">
+          <div class="f-step" style="background:#10b98120;color:#10b981">02</div>
+          <div><div class="f-label" style="color:#10b981">Hash SHA-256 automático</div><div class="f-sub">Huella digital única del documento</div></div>
+        </div>
+        <div class="flow-row">
+          <div class="f-step" style="background:#27272a;color:#fafafa">03</div>
+          <div><div class="f-label">PostgreSQL → Registro</div><div class="f-sub">Metadatos, custodia, estado</div></div>
+        </div>
+        <div class="flow-row">
+          <div class="f-step" style="background:#a855f720;color:#c084fc">04</div>
+          <div><div class="f-label" style="color:#c084fc">Blockchain → Inmutabilidad</div><div class="f-sub">Hash on-chain · verificación externa</div></div>
+        </div>
+        <div class="flow-row">
+          <div class="f-step" style="background:#0C5CAB20;color:#60a5fa">05</div>
+          <div><div class="f-label" style="color:#60a5fa">Portal Ciudadano → Verificar</div><div class="f-sub">Cualquier persona, sin privilegios</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Slide 4 — Demo ───────────────────────────────────────────── -->
+<div class="slide" id="s4">
+  <div class="section-label">Prototipo Funcional</div>
+  <div class="demo-content">
+    <div class="demo-left">
+      <div class="slide-title" style="font-size:28px">Así lo usa un ciudadano.</div>
+      <div style="margin-bottom:24px;color:#a1a1aa;font-size:14px;line-height:1.6">Busca su casilla. Ve el resultado. Verifica el hash. Sin crear cuenta, sin depender de ninguna institución.</div>
+      <div class="demo-point">
+        <div class="dp-icon" style="background:#10b98120">✓</div>
+        <div class="dp-text"><strong>Búsqueda por casilla o sección.</strong> Resultado, votos y estado de verificación en segundos.</div>
+      </div>
+      <div class="demo-point">
+        <div class="dp-icon" style="background:#a855f720">⛓</div>
+        <div class="dp-text"><strong>Hash verificable en blockchain.</strong> El ciudadano puede confirmar el hash en la red pública, sin confiar en ActaTrace.</div>
+      </div>
+      <div class="demo-point">
+        <div class="dp-icon" style="background:#ef444420">⚠</div>
+        <div class="dp-text"><strong>Inconsistencias visibles.</strong> Si el PREP difiere del acta, el sistema lo marca automáticamente con evidencia.</div>
+      </div>
+      <div class="demo-point">
+        <div class="dp-icon" style="background:#0C5CAB20">🔗</div>
+        <div class="dp-text"><strong>Cadena de custodia pública.</strong> Quién tocó el documento, en qué momento y con qué rol.</div>
+      </div>
+    </div>
+    <div>
+      <div class="demo-screen">
+        <div class="screen-bar">
+          <div class="screen-dot" style="background:#ef4444"></div>
+          <div class="screen-dot" style="background:#f59e0b"></div>
+          <div class="screen-dot" style="background:#10b981"></div>
+          <span style="font-size:11px;color:#52525b;margin-left:8px;font-family:'IBM Plex Mono',monospace">actatrace.mx/verificar</span>
+        </div>
+        <div class="screen-body">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px">Portal Ciudadano</div>
+          <div class="mock-search">🔍  Casilla 1042-B</div>
+          <div class="mock-card">
+            <div class="mock-badge">✓ VERIFICADO</div>
+            <div class="mock-row">
+              <span style="color:#71717a;font-size:11px">Casilla</span>
+              <span style="font-size:11px;font-weight:700">1042-B · Chihuahua</span>
+            </div>
+            <div class="mock-row">
+              <span style="color:#71717a;font-size:11px">Votos en acta</span>
+              <span style="font-size:11px;font-weight:700;font-family:'IBM Plex Mono',monospace">342</span>
+            </div>
+            <div class="mock-row">
+              <span style="color:#71717a;font-size:11px">Votos en PREP</span>
+              <span style="font-size:11px;color:#10b981;font-weight:700;font-family:'IBM Plex Mono',monospace">342 ✓</span>
+            </div>
+            <div class="mock-hash">SHA-256: a3f9c2d1e8b47f203c91a5d6...</div>
+            <div style="margin-top:6px;font-size:10px;color:#a1a1aa">Blockchain TX: 0x8f2a3b91c44d6e7f...</div>
+          </div>
+          <div style="margin-top:10px;background:#ef444410;border:1px solid #ef444430;border-radius:6px;padding:8px 10px;font-size:10px;color:#ef4444">
+            ⚠ Casilla 1087-A: Inconsistencia detectada (PREP 291 ≠ Acta 289)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Slide 5 — Impact ─────────────────────────────────────────── -->
+<div class="slide" id="s5">
+  <div class="section-label">Impacto Democrático</div>
+  <div class="slide-title" style="margin-bottom:24px">El problema es global.<br/>La oportunidad también.</div>
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="ic-icon">🗳️</div>
+      <div class="ic-metric" style="color:#0C5CAB">170K+</div>
+      <div class="ic-label">Casillas en México (elección federal)</div>
+      <div class="ic-desc">Cada una es una acta que puede ser registrada, hasheada y verificada públicamente.</div>
+    </div>
+    <div class="impact-card">
+      <div class="ic-icon">👁️</div>
+      <div class="ic-metric" style="color:#10b981">100%</div>
+      <div class="ic-label">Actas auditables sin privilegios</div>
+      <div class="ic-desc">Cualquier ciudadano, observador o medio de comunicación puede verificar sin acceso especial.</div>
+    </div>
+    <div class="impact-card">
+      <div class="ic-icon">⚡</div>
+      <div class="ic-metric" style="color:#f59e0b">&lt;2s</div>
+      <div class="ic-label">Tiempo de verificación por casilla</div>
+      <div class="ic-desc">Un ciudadano puede verificar la integridad de su casilla en menos de dos segundos.</div>
+    </div>
+  </div>
+  <div class="market-box">
+    <div class="market-stat">
+      <div class="market-num">18</div>
+      <div class="market-label">países en LATAM con procesos electorales anuales</div>
+    </div>
+    <div class="market-stat">
+      <div class="market-num">$2.4B</div>
+      <div class="market-label">mercado global GovTech de integridad electoral 2025</div>
+    </div>
+    <div class="market-stat">
+      <div class="market-num">0</div>
+      <div class="market-label">soluciones de trazabilidad de actas con blockchain en LATAM</div>
+    </div>
+    <div class="market-stat">
+      <div class="market-num">2026</div>
+      <div class="market-label">elecciones estatales en México — ventana de piloto</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Slide 6 — Tech ────────────────────────────────────────────── -->
+<div class="slide" id="s6">
+  <div class="section-label">Viabilidad Técnica</div>
+  <div class="slide-title" style="margin-bottom:24px">Stack maduro.<br/>Arquitectura auditable.</div>
+  <div class="tech-layout">
+    <div>
+      <div class="tech-section">
+        <div class="ts-title">Backend & API</div>
+        <div class="ts-item"><div class="ts-dot" style="background:#10b981"></div> FastAPI (Python) <span class="ts-badge">REST · async</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#10b981"></div> PostgreSQL <span class="ts-badge">Fuente principal</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#10b981"></div> Redis <span class="ts-badge">Cache · Colas</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#10b981"></div> JWT + RBAC <span class="ts-badge">6 roles</span></div>
+      </div>
+      <div class="tech-section" style="margin-top:14px">
+        <div class="ts-title">Frontend</div>
+        <div class="ts-item"><div class="ts-dot" style="background:#0C5CAB"></div> Next.js / React <span class="ts-badge">Portal público</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#0C5CAB"></div> Dashboard React <span class="ts-badge">Institucional</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#0C5CAB"></div> WCAG 2.1 AA <span class="ts-badge">Accesible</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="tech-section">
+        <div class="ts-title">Blockchain & Storage</div>
+        <div class="ts-item"><div class="ts-dot" style="background:#a855f7"></div> Hyperledger Fabric <span class="ts-badge">Permisionado</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#a855f7"></div> Solo hashes · eventos <span class="ts-badge">No datos personales</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#a855f7"></div> S3 / IPFS <span class="ts-badge">Documentos</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#a855f7"></div> SHA-256 <span class="ts-badge">Estándar NIST</span></div>
+      </div>
+      <div class="tech-section" style="margin-top:14px">
+        <div class="ts-title">Infraestructura</div>
+        <div class="ts-item"><div class="ts-dot" style="background:#f59e0b"></div> Docker + Kubernetes <span class="ts-badge">Orquestación</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#f59e0b"></div> Terraform <span class="ts-badge">IaC reproducible</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#f59e0b"></div> AWS / OCI <span class="ts-badge">Cloud</span></div>
+        <div class="ts-item"><div class="ts-dot" style="background:#f59e0b"></div> CI/CD + observabilidad <span class="ts-badge">Logs estructurados</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="principles-row">
+    <div class="pr-chip">🔍 Auditabilidad primero</div>
+    <div class="pr-chip">🧱 Capas desacopladas</div>
+    <div class="pr-chip">⛓ Blockchain mínimo</div>
+    <div class="pr-chip">🌐 Open Source ready</div>
+    <div class="pr-chip">⚖ LGIPE + LFPDPPP</div>
+  </div>
+</div>
+
+<!-- ── Slide 7 — Ask ─────────────────────────────────────────────── -->
+<div class="slide" id="s7">
+  <div class="ask-content">
+    <div class="ask-left">
+      <div class="section-label">La Propuesta</div>
+      <div class="ask-title">La evidencia que<br/>la democracia <span>merece</span>.</div>
+      <div style="color:#a1a1aa;font-size:14px;line-height:1.7;margin-bottom:24px">
+        ActaTrace no pide que confíen en el sistema. Pide que lo verifiquen. Eso es exactamente el punto.
+      </div>
+      <div class="milestone">
+        <div class="ms-q">Q3 26</div>
+        <div class="ms-text"><strong>Piloto con autoridad electoral estatal</strong>Integración con proceso real · 500 casillas · validación institucional</div>
+      </div>
+      <div class="milestone">
+        <div class="ms-q">Q4 26</div>
+        <div class="ms-text"><strong>MVP completo + Portal Ciudadano live</strong>Cobertura 100% casillas del piloto · API pública documentada</div>
+      </div>
+      <div class="milestone">
+        <div class="ms-q">2027</div>
+        <div class="ms-text"><strong>Expansión regional LATAM</strong>Colombia, Perú, Chile — elecciones objetivo identificadas</div>
+      </div>
+    </div>
+    <div>
+      <div class="ask-box">
+        <div class="ab-label">Inversión Seed</div>
+        <div class="ab-value">$450K USD</div>
+        <div class="ab-sub">18 meses · Equipo núcleo + infraestructura + piloto institucional</div>
+      </div>
+      <div class="ask-box" style="border-color:#10b98130">
+        <div class="ab-label">Modelo de ingresos</div>
+        <div class="ab-value" style="font-size:20px;color:#10b981">B2G SaaS</div>
+        <div class="ab-sub">Licencia anual por proceso electoral · $80K–$400K USD dependiendo escala · Servicios de integración y auditoría</div>
+      </div>
+      <div class="ask-box" style="border-color:#a855f730">
+        <div class="ab-label">Ventaja competitiva</div>
+        <div class="ab-value" style="font-size:17px;color:#c084fc;line-height:1.3">Primero en LATAM.<br/>Sin datos sensibles on-chain.<br/>Auditabilidad sin blockchain.</div>
+      </div>
+      <div class="contact-box">
+        <div class="contact-quote">"Confianza no se declara. Se construye con evidencia verificable."</div>
+        <div class="contact-name">ActaTrace · GovTech México</div>
+        <div class="contact-sub">contacto@actatrace.mx · actatrace.mx</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prev">←</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="next">→</button>
+  <div class="slide-num" id="counter">1 / 7</div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  let current = 0;
+  const total = slides.length;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => go(i);
+    dots.appendChild(d);
+  });
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    document.querySelectorAll('.dot')[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    document.querySelectorAll('.dot')[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.getElementById('next').onclick = () => go(current + 1);
+  document.getElementById('prev').onclick = () => go(current - 1);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(current - 1);
+  });
+</script>
+</body>
+</html>

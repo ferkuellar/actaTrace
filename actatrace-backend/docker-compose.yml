@@ -1,0 +1,45 @@
+name: actatrace
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: actatrace_postgres
+    environment:
+      POSTGRES_DB: actatrace
+      POSTGRES_USER: actatrace
+      POSTGRES_PASSWORD: actatrace
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - actatrace_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U actatrace -d actatrace"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: actatrace_backend
+    env_file:
+      - .env.example
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    networks:
+      - actatrace_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+    name: actatrace_postgres_data
+
+networks:
+  actatrace_network:
+    name: actatrace_network

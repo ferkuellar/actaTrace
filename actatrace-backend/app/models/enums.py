@@ -1,0 +1,58 @@
+from enum import StrEnum
+
+
+class UserRole(StrEnum):
+    ADMIN_ELECTORAL = "ADMIN_ELECTORAL"
+    CAPTURISTA = "CAPTURISTA"
+    SUPERVISOR = "SUPERVISOR"
+    AUDITOR = "AUDITOR"
+    OBSERVADOR = "OBSERVADOR"
+    CIUDADANO_PUBLICO = "CIUDADANO_PUBLICO"
+
+
+class UserStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    SUSPENDED = "SUSPENDED"
+
+
+class ActaStatus(StrEnum):
+    DRAFT = "DRAFT"
+    UPLOADED = "UPLOADED"
+    HASHED = "HASHED"
+    ANCHORED = "ANCHORED"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    VERIFIED = "VERIFIED"
+    REJECTED = "REJECTED"
+    ARCHIVED = "ARCHIVED"
+
+
+class DocumentIntegrityStatus(StrEnum):
+    PENDING = "PENDING"
+    VALID = "VALID"
+    MISMATCH = "MISMATCH"
+    CORRUPTED = "CORRUPTED"
+
+
+class CustodyEventType(StrEnum):
+    CREATED = "CREATED"
+    TRANSFERRED = "TRANSFERRED"
+    RECEIVED = "RECEIVED"
+    VALIDATED = "VALIDATED"
+    REJECTED = "REJECTED"
+    ESCALATED = "ESCALATED"
+    CLOSED = "CLOSED"
+
+
+class PREPValidationStatus(StrEnum):
+    PENDING = "PENDING"
+    MATCHED = "MATCHED"
+    MISMATCHED = "MISMATCHED"
+    REQUIRES_REVIEW = "REQUIRES_REVIEW"
+
+
+class BlockchainVerificationStatus(StrEnum):
+    PENDING = "PENDING"
+    ANCHORED = "ANCHORED"
+    VERIFIED = "VERIFIED"
+    FAILED = "FAILED"
