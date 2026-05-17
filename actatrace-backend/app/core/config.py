@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     environment: str = Field(default="local", alias="ENVIRONMENT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     backend_cors_origins: str = Field(default="", alias="BACKEND_CORS_ORIGINS")
-    cors_allowed_origins: str = Field(default="http://localhost:3000", alias="CORS_ALLOWED_ORIGINS")
+    cors_allowed_origins: str = Field(default="http://localhost:3010,http://localhost:3000", alias="CORS_ALLOWED_ORIGINS")
     blockchain_provider: str = Field(default="mock", alias="BLOCKCHAIN_PROVIDER")
     fabric_connection_profile: str = Field(default="", alias="FABRIC_CONNECTION_PROFILE")
     fabric_wallet_path: str = Field(default="", alias="FABRIC_WALLET_PATH")

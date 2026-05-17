@@ -30,7 +30,7 @@ app.add_middleware(RequestContextMiddleware)
 app.add_middleware(StructuredRequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins or ["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=settings.cors_origins or ["http://localhost:3010", "http://localhost:3000", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
