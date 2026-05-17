@@ -2,7 +2,8 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Any
 
-SENSITIVE_KEYS = {"password", "hashed_password", "token", "jwt", "secret", "storage_path", "storage_key", "storage_url"}
+from app.core.masking import SENSITIVE_KEYS, mask_sensitive
+
 
 
 def _safe_value(value: Any) -> Any:
@@ -11,7 +12,7 @@ def _safe_value(value: Any) -> Any:
     if isinstance(value, (datetime, date)):
         return value.isoformat()
     if isinstance(value, dict):
-        return {key: ("***" if key.lower() in SENSITIVE_KEYS else _safe_value(item)) for key, item in value.items()}
+        return mask_sensitive({key: _safe_value(item) for key, item in value.items()})
     if isinstance(value, list):
         return [_safe_value(item) for item in value]
     return value

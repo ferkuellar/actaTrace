@@ -8,10 +8,16 @@ class Settings(BaseSettings):
     database_url: str = Field(default="sqlite:///./actatrace_local.db", alias="DATABASE_URL")
     jwt_secret_key: str = Field(default="change-me", alias="JWT_SECRET_KEY")
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
+    jwt_issuer: str = Field(default="actatrace", alias="JWT_ISSUER")
+    jwt_audience: str = Field(default="actatrace-api", alias="JWT_AUDIENCE")
     access_token_expire_minutes: int = Field(default=60, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_days: int = Field(default=7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
+    password_min_length: int = Field(default=12, alias="PASSWORD_MIN_LENGTH")
+    password_require_special: bool = Field(default=True, alias="PASSWORD_REQUIRE_SPECIAL")
     environment: str = Field(default="local", alias="ENVIRONMENT")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     backend_cors_origins: str = Field(default="", alias="BACKEND_CORS_ORIGINS")
+    cors_allowed_origins: str = Field(default="http://localhost:3000", alias="CORS_ALLOWED_ORIGINS")
     blockchain_provider: str = Field(default="mock", alias="BLOCKCHAIN_PROVIDER")
     fabric_connection_profile: str = Field(default="", alias="FABRIC_CONNECTION_PROFILE")
     fabric_wallet_path: str = Field(default="", alias="FABRIC_WALLET_PATH")
@@ -36,12 +42,21 @@ class Settings(BaseSettings):
     enable_public_traceability: bool = Field(default=True, alias="ENABLE_PUBLIC_TRACEABILITY")
     audit_log_retention_days: int = Field(default=2555, alias="AUDIT_LOG_RETENTION_DAYS")
     public_traceability_rate_limit_per_minute: int = Field(default=60, alias="PUBLIC_TRACEABILITY_RATE_LIMIT_PER_MINUTE")
+    enable_security_headers: bool = Field(default=True, alias="ENABLE_SECURITY_HEADERS")
+    enable_rate_limiting: bool = Field(default=True, alias="ENABLE_RATE_LIMITING")
+    rate_limit_login_per_minute: int = Field(default=5, alias="RATE_LIMIT_LOGIN_PER_MINUTE")
+    rate_limit_public_search_per_minute: int = Field(default=60, alias="RATE_LIMIT_PUBLIC_SEARCH_PER_MINUTE")
+    rate_limit_public_verify_per_minute: int = Field(default=60, alias="RATE_LIMIT_PUBLIC_VERIFY_PER_MINUTE")
+    rate_limit_document_download_per_minute: int = Field(default=20, alias="RATE_LIMIT_DOCUMENT_DOWNLOAD_PER_MINUTE")
+    rate_limit_blockchain_anchor_per_minute: int = Field(default=10, alias="RATE_LIMIT_BLOCKCHAIN_ANCHOR_PER_MINUTE")
+    enable_audit_hash_chain: bool = Field(default=True, alias="ENABLE_AUDIT_HASH_CHAIN")
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
     @property
     def cors_origins(self) -> list[str]:
-        return [origin.strip() for origin in self.backend_cors_origins.split(",") if origin.strip()]
+        configured = self.backend_cors_origins or self.cors_allowed_origins
+        return [origin.strip() for origin in configured.split(",") if origin.strip()]
 
 
 @lru_cache

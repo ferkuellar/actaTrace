@@ -10,7 +10,9 @@ from app.core.config import settings
 from app.core.errors import AppError, app_error_handler
 from app.core.logging import configure_logging
 from app.middleware.audit_middleware import StructuredRequestLoggingMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_context import RequestContextMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
 
 configure_logging()
 
@@ -20,6 +22,10 @@ app = FastAPI(
     description="Backend API foundation for electoral traceability, PREP verification, custody, and auditability.",
 )
 
+if settings.enable_security_headers:
+    app.add_middleware(SecurityHeadersMiddleware)
+if settings.enable_rate_limiting:
+    app.add_middleware(RateLimitMiddleware)
 app.add_middleware(RequestContextMiddleware)
 app.add_middleware(StructuredRequestLoggingMiddleware)
 app.add_middleware(

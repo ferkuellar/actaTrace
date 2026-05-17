@@ -14,6 +14,11 @@ class TokenResponse(BaseModel):
     user: UserRead
 
 
+class LogoutResponse(BaseModel):
+    success: bool = True
+    message: str = "Logged out"
+
+
 class AdminRegisterRequest(BaseModel):
     full_name: str = Field(min_length=2, max_length=200)
     email: EmailStr
