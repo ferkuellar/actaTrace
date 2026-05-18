@@ -1,0 +1,46 @@
+name: Validation Test Suite
+
+on:
+  pull_request:
+    paths:
+      - "actatrace-backend/**"
+      - ".github/workflows/test.yml"
+  workflow_dispatch:
+
+jobs:
+  backend-validation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: actatrace-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax check
+        run: python -m compileall app tests
+      - name: Unit tests
+        run: pytest tests/unit --junitxml=test-reports/unit-results.xml
+      - name: Integration tests
+        run: pytest tests/integration --junitxml=test-reports/integration-results.xml
+      - name: Security tests
+        run: pytest tests/security --junitxml=test-reports/security-results.xml
+      - name: Observability tests
+        run: pytest tests/observability --junitxml=test-reports/observability-results.xml
+      - name: E2E smoke tests
+        run: pytest tests/e2e --junitxml=test-reports/e2e-results.xml
+      - name: Full backend validation with coverage
+        run: pytest app/tests tests --cov=app --cov-report=xml --cov-report=html --junitxml=test-results.xml
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-validation-results
+          path: |
+            actatrace-backend/test-results.xml
+            actatrace-backend/coverage.xml
+            actatrace-backend/htmlcov
+            actatrace-backend/test-reports
+

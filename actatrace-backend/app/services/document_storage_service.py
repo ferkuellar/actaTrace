@@ -222,7 +222,7 @@ class DocumentStorageService:
         return document
 
     def _sanitize(self, value: str) -> str:
-        sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", value.strip()).strip("-")
+        sanitized = re.sub(r"[^A-Za-z0-9_-]+", "-", value.strip()).strip("-")
         return sanitized[:120] or "unknown"
 
     def _build_storage_provider(self) -> StorageProvider:

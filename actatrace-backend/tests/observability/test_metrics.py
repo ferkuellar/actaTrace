@@ -1,0 +1,3 @@
+from app.tests.test_observability import test_metrics_exposes_prometheus_format as test_metrics_format
+from app.tests.test_observability import test_hash_mismatch_audit_event_increments_metric as test_hash_mismatch_metric
+

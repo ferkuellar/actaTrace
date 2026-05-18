@@ -1,0 +1,2 @@
+from app.tests.test_traceability_alerts import test_document_hash_mismatch_creates_critical_alert as test_alert_document_hash_mismatch
+from app.tests.test_traceability_alerts import test_custody_gap_creates_warning_alert as test_alert_custody_gap

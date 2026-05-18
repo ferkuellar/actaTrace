@@ -1,0 +1,1 @@
+from app.tests.test_observability import test_structured_logs_include_request_id_and_mask_secrets as test_structured_logs_mask_secrets

@@ -1,0 +1,2 @@
+from app.tests.test_observability import test_health_ready_checks_database as test_health_ready
+
