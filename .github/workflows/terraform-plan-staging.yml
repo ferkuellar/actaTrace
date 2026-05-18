@@ -1,0 +1,36 @@
+name: Terraform Plan Staging
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "infra/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Terraform plan
+        working-directory: infra/environments/staging
+        run: |
+          terraform init
+          terraform plan -var-file=terraform.tfvars -out=staging.tfplan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-staging
+          path: infra/environments/staging/staging.tfplan
+

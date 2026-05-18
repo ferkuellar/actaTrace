@@ -1,0 +1,25 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+
+# Node / frontend
+node_modules/
+build/
+dist/
+
+# Terraform
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/terraform.tfvars
+**/*.tfplan
+**/backend.tf
+
+# Local storage
+actatrace-backend/storage/

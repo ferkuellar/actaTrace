@@ -1,0 +1,32 @@
+variable "project_name" { type = string }
+variable "environment" { type = string }
+variable "region" { type = string }
+variable "owner" { type = string }
+variable "cost_center" { type = string }
+variable "data_classification" { type = string }
+variable "criticality" { type = string }
+variable "tags" { type = map(string) }
+variable "vpc_cidr" { type = string }
+variable "availability_zones" { type = list(string) }
+variable "allowed_cidr_blocks" { type = list(string) }
+variable "backend_image" { type = string }
+variable "backend_cpu" { type = number }
+variable "backend_memory" { type = number }
+variable "backend_desired_count" { type = number }
+variable "database_instance_class" { type = string }
+variable "database_name" { type = string }
+variable "database_username" { type = string }
+variable "database_password" {
+  type      = string
+  sensitive = true
+}
+variable "backup_retention_days" { type = number }
+variable "storage_bucket_name" { type = string }
+variable "enable_storage_versioning" { type = bool }
+variable "enable_monitoring" { type = bool }
+variable "enable_blockchain_node" { type = bool }
+variable "enable_public_api" { type = bool }
+variable "github_repo" { type = string }
+variable "enable_github_oidc" { type = bool }
+variable "fabric_channel_name" { type = string }
+variable "fabric_chaincode_name" { type = string }

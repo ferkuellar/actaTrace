@@ -1,0 +1,32 @@
+project_name              = "actatrace"
+environment               = "staging"
+region                    = "us-east-1"
+owner                     = "platform-team"
+cost_center               = "civic-tech"
+data_classification       = "confidential"
+criticality               = "high"
+vpc_cidr                  = "10.50.0.0/16"
+availability_zones        = ["us-east-1a", "us-east-1b"]
+allowed_cidr_blocks       = ["203.0.113.10/32"]
+backend_image             = "123456789012.dkr.ecr.us-east-1.amazonaws.com/actatrace-backend:staging"
+backend_cpu               = 512
+backend_memory            = 1024
+backend_desired_count     = 1
+database_instance_class   = "db.t4g.small"
+database_name             = "actatrace"
+database_username         = "actatrace"
+database_password         = "replace-through-secret-manager"
+backup_retention_days     = 7
+storage_bucket_name       = "actatrace-staging-documents-example"
+enable_storage_versioning = true
+enable_monitoring         = true
+enable_blockchain_node    = false
+enable_public_api         = true
+github_repo               = "organization/actaTrace"
+enable_github_oidc        = true
+fabric_channel_name       = "actatrace-channel"
+fabric_chaincode_name     = "actatrace-chaincode"
+tags = {
+  Purpose = "pre-production"
+}
+

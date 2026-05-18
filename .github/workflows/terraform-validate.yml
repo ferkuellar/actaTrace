@@ -1,0 +1,26 @@
+name: Terraform Validate
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform-*.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+      - name: Terraform fmt
+        run: terraform fmt -recursive -check
+      - name: Terraform validate modules
+        run: |
+          for env in dev staging prod; do
+            cd "$GITHUB_WORKSPACE/infra/environments/$env"
+            terraform init -backend=false
+            terraform validate
+          done
+

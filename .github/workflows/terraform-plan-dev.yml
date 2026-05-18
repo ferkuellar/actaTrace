@@ -1,0 +1,36 @@
+name: Terraform Plan Dev
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Terraform plan
+        working-directory: infra/environments/dev
+        run: |
+          terraform init
+          terraform plan -var-file=terraform.tfvars -out=dev.tfplan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-dev
+          path: infra/environments/dev/dev.tfplan
+
