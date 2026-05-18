@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 
-from app.api.v1 import actas, alerts, auth, blockchain, custody_events, documents, prep_results, traceability, users
+from app.api.v1 import actas, alerts, auth, blockchain, custody_events, documents, health, metrics, prep_results, traceability, users
 
 api_router = APIRouter(prefix="/api/v1")
+api_router.include_router(health.router, tags=["health"])
+api_router.include_router(metrics.router, tags=["metrics"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(actas.router, prefix="/actas", tags=["actas"])

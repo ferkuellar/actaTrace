@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
 from sqlalchemy.exc import IntegrityError
 
+from app.api.v1.health import router as health_router
+from app.api.v1.metrics import router as metrics_router
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.errors import AppError, app_error_handler
@@ -13,6 +15,7 @@ from app.middleware.audit_middleware import StructuredRequestLoggingMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_context import RequestContextMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.observability.middleware import PrometheusMetricsMiddleware
 
 configure_logging()
 
@@ -26,6 +29,8 @@ if settings.enable_security_headers:
     app.add_middleware(SecurityHeadersMiddleware)
 if settings.enable_rate_limiting:
     app.add_middleware(RateLimitMiddleware)
+if settings.enable_metrics:
+    app.add_middleware(PrometheusMetricsMiddleware)
 app.add_middleware(RequestContextMiddleware)
 app.add_middleware(StructuredRequestLoggingMiddleware)
 app.add_middleware(
@@ -68,14 +73,12 @@ async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSON
     )
 
 
-@app.get("/health")
-def health() -> dict:
-    return {"status": "ok", "service": "actatrace-backend"}
-
-
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
     return RedirectResponse(url="/docs")
 
 
+app.include_router(health_router)
+if settings.enable_metrics:
+    app.include_router(metrics_router)
 app.include_router(api_router)

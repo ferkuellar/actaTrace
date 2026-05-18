@@ -4,6 +4,7 @@ from starlette.responses import JSONResponse
 
 from app.core.config import settings
 from app.core.rate_limit import InMemoryRateLimiter, RateLimitRule
+from app.observability.metrics import HTTP_RATE_LIMITED_TOTAL, PUBLIC_RATE_LIMIT_EXCEEDED_TOTAL
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -22,6 +23,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         client = request.client.host if request.client else "unknown"
         if self.limiter.allow(client, rule):
             return await call_next(request)
+        HTTP_RATE_LIMITED_TOTAL.labels(route=request.url.path, endpoint_group=rule.name).inc()
+        if rule.name.startswith("public"):
+            PUBLIC_RATE_LIMIT_EXCEEDED_TOTAL.labels(endpoint_group=rule.name, reason="rate_limit").inc()
         return JSONResponse(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             content={

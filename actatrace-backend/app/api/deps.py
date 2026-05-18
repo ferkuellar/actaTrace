@@ -9,6 +9,7 @@ from app.core.errors import ForbiddenError, UnauthorizedError
 from app.core.security import decode_access_token
 from app.models.enums import AuditEventCategory, AuditEventSeverity, UserRole, UserStatus
 from app.models.user import User
+from app.observability.metrics import AUTH_FORBIDDEN_TOTAL, AUTH_UNAUTHORIZED_TOTAL, endpoint_group
 from app.services.audit_service import AuditService
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -28,6 +29,14 @@ def _record_security_event(
     entity_type: str = "Auth",
     entity_id: str = "unknown",
 ) -> None:
+    if action == "AUTH_UNAUTHORIZED":
+        AUTH_UNAUTHORIZED_TOTAL.labels(role="anonymous", endpoint_group=endpoint_group(request.url.path), reason=code).inc()
+    if action == "AUTH_FORBIDDEN":
+        role = "unknown"
+        if actor_user_id:
+            actor = db.get(User, actor_user_id)
+            role = actor.role.value if actor else "unknown"
+        AUTH_FORBIDDEN_TOTAL.labels(role=role, endpoint_group=endpoint_group(request.url.path), reason=code).inc()
     AuditService(db).record(
         action=action,
         entity_type=entity_type,

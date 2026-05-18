@@ -1,0 +1,33 @@
+{
+  "title": "ActaTrace Security and Audit Dashboard",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "tags": ["actatrace", "security", "audit"],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Failed Logins",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(auth_login_failed_total[5m])) by (reason)", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Forbidden Attempts",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(auth_forbidden_total[5m])) by (endpoint_group)", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Audit Events by Severity",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(audit_events_total[5m])) by (event_severity)", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Tamper Attempts",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(audit_tamper_attempts_total[5m]))", "refId": "A"}]
+    }
+  ]
+}

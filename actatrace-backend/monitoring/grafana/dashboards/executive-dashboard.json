@@ -1,0 +1,46 @@
+{
+  "title": "ActaTrace Executive Operational Dashboard",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "tags": ["actatrace", "executive"],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Actas Created",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(actas_created_total)", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Verified Actas",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(actas_verified_total)", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Open Critical Alerts",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(alerts_open_total{severity=\"CRITICAL\"})", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Hash Mismatches",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(document_hash_mismatches_total)", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "API Request Rate",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(rate(http_requests_total[5m]))", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "PREP Mismatches",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+      "targets": [{"expr": "sum(increase(prep_mismatches_total[5m]))", "refId": "A"}]
+    }
+  ]
+}
+

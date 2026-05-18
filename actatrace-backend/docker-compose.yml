@@ -47,6 +47,41 @@ services:
       - actatrace_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: actatrace_prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - backend
+    networks:
+      - actatrace_network
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: actatrace_grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - actatrace_network
+
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z
     container_name: actatrace_minio
@@ -87,6 +122,10 @@ volumes:
     name: actatrace_postgres_data
   minio_data:
     name: actatrace_minio_data
+  prometheus_data:
+    name: actatrace_prometheus_data
+  grafana_data:
+    name: actatrace_grafana_data
 
 networks:
   actatrace_network:

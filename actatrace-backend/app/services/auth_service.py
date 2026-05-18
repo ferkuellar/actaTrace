@@ -4,6 +4,7 @@ from app.core.errors import AppError, ConflictError, UnauthorizedError
 from app.core.security import create_access_token, hash_password, validate_password_policy, verify_password
 from app.models.enums import AuditEventCategory, AuditEventSeverity, UserRole, UserStatus
 from app.models.user import User
+from app.observability.metrics import AUTH_LOGIN_FAILED_TOTAL, AUTH_LOGIN_SUCCESS_TOTAL
 from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditService
 
@@ -36,6 +37,11 @@ class AuthService:
     def authenticate(self, email: str, password: str, request_id: str = "unknown") -> tuple[User, str]:
         user = self.users.get_by_email(email)
         if not user or not verify_password(password, user.hashed_password):
+            AUTH_LOGIN_FAILED_TOTAL.labels(
+                role=user.role.value if user else "unknown",
+                endpoint_group="auth",
+                reason="invalid_credentials",
+            ).inc()
             AuditService(self.db).record(
                 action="AUTH_LOGIN_FAILED",
                 entity_type="Auth",
@@ -49,6 +55,7 @@ class AuthService:
             self.db.commit()
             raise UnauthorizedError("Invalid credentials", code="AUTH_INVALID_CREDENTIALS")
         if user.status != UserStatus.ACTIVE:
+            AUTH_LOGIN_FAILED_TOTAL.labels(role=user.role.value, endpoint_group="auth", reason="account_disabled").inc()
             AuditService(self.db).record(
                 action="AUTH_LOGIN_FAILED",
                 entity_type="User",
@@ -79,6 +86,7 @@ class AuthService:
             event_category=AuditEventCategory.AUTH,
             event_severity=AuditEventSeverity.INFO,
         )
+        AUTH_LOGIN_SUCCESS_TOTAL.labels(role=user.role.value, endpoint_group="auth").inc()
         return user, token
 
     def logout(self, user: User, request_id: str) -> None:

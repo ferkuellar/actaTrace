@@ -1,0 +1,40 @@
+{
+  "title": "ActaTrace Document Integrity Dashboard",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "tags": ["actatrace", "documents"],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Documents Uploaded",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(documents_uploaded_total)", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Documents Verified",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(documents_verified_total)", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Hash Mismatches",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(document_hash_mismatches_total)", "refId": "A"}]
+    },
+    {
+      "type": "stat",
+      "title": "Storage Missing",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+      "targets": [{"expr": "sum(document_storage_missing_total)", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Integrity Checks",
+      "gridPos": {"x": 0, "y": 4, "w": 24, "h": 8},
+      "targets": [{"expr": "sum(rate(document_integrity_checks_total[5m])) by (integrity_status)", "refId": "A"}]
+    }
+  ]
+}
+

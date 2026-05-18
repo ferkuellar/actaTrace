@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from app.models.enums import AuditEventCategory, AuditEventSeverity
 from app.models.audit_log import AuditLog
 from app.models.user import User
+from app.observability.instrumentation import record_audit_metric
+from app.observability.metrics import AUDIT_LOG_WRITE_FAILURES_TOTAL
 from app.services.state_diff import diff_states
 
 
@@ -71,8 +73,13 @@ class AuditService:
             metadata_json=metadata_json,
             request_id=request_id,
         )
-        self.db.add(log)
-        self.db.flush()
+        try:
+            self.db.add(log)
+            self.db.flush()
+        except Exception:
+            AUDIT_LOG_WRITE_FAILURES_TOTAL.labels(action=action).inc()
+            raise
+        record_audit_metric(action, log.event_category.value, log.event_severity.value)
         return log
 
     def record_security_event(

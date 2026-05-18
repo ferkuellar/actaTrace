@@ -1,0 +1,104 @@
+groups:
+  - name: actatrace-critical
+    rules:
+      - alert: AuditLogWriteFailure
+        expr: increase(audit_log_write_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Audit log write failure detected
+          business_impact: "Forensic reconstruction may be incomplete."
+          suggested_response: "Stop affected workflows, inspect database health, preserve application logs, and escalate to the audit owner."
+          runbook: "docs/runbooks/audit-log-write-failure.md"
+
+      - alert: DocumentHashMismatchDetected
+        expr: increase(document_hash_mismatches_total[5m]) >= 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Document hash mismatch detected
+          business_impact: "A registered electoral evidence file may have been altered or incorrectly stored."
+          suggested_response: "Open the document integrity incident workflow and preserve the related acta, document, audit, and storage records."
+          runbook: "docs/runbooks/hash-mismatch.md"
+
+      - alert: AuditTamperAttempt
+        expr: increase(audit_tamper_attempts_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Audit tamper attempt detected
+          business_impact: "Audit evidence may be under active attack."
+          suggested_response: "Lock down administrative access, preserve logs, and escalate to security and institutional audit."
+          runbook: "docs/runbooks/audit-tamper-attempt.md"
+
+      - alert: DatabaseUnavailable
+        expr: up{job="actatrace-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: ActaTrace backend target is unavailable
+          business_impact: "Acta registration, verification, and public audit may be unavailable."
+          suggested_response: "Check backend, database, and network health before accepting new operational workload."
+          runbook: "docs/runbooks/backend-unavailable.md"
+
+      - alert: PrepMismatchSpike
+        expr: increase(prep_mismatches_total[10m]) >= 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: PREP mismatch spike detected
+          business_impact: "Preliminary results may not match registered acta evidence."
+          suggested_response: "Assign auditor review and inspect acta, PREP, custody, and document integrity timelines."
+          runbook: "docs/runbooks/prep-mismatch.md"
+
+  - name: actatrace-warning
+    rules:
+      - alert: ApiLatencyElevated
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: API p95 latency is elevated
+          business_impact: "Users may experience slow verification or operational workflows."
+          suggested_response: "Check backend logs, database latency, and storage provider response times."
+          runbook: "docs/runbooks/api-latency.md"
+
+      - alert: ApiErrorRateElevated
+        expr: sum(rate(http_errors_total{status_code=~"5.."}[5m])) / clamp_min(sum(rate(http_requests_total[5m])), 1) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: API 5xx error rate is elevated
+          business_impact: "Operational and public verification reliability may be reduced."
+          suggested_response: "Inspect top failing routes and recent deployments."
+          runbook: "docs/runbooks/api-errors.md"
+
+      - alert: BlockchainAnchoringDelay
+        expr: increase(blockchain_anchor_failures_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Blockchain anchoring failures detected
+          business_impact: "Proof anchoring may be delayed, while PostgreSQL remains the system of record."
+          suggested_response: "Check provider health and retry only idempotent operations."
+          runbook: "docs/runbooks/blockchain-anchor-failure.md"
+
+      - alert: PublicVerificationFailuresIncreasing
+        expr: increase(http_errors_total{route=~"/api/v1/traceability/public.*|/api/v1/blockchain/verify.*"}[10m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Public verification failures are increasing
+          business_impact: "Citizen verification experience may be degraded."
+          suggested_response: "Review public endpoints, rate limits, and backend dependency health."
+          runbook: "docs/runbooks/public-verification-failures.md"
+
