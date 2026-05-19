@@ -2,6 +2,7 @@
 node_modules
 dist
 build
+web-build
 playwright-report
 test-results
 .env.local
